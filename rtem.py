@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 print os.environ['ALKEY']
 import numpy as np
 
+period=56
+
 class RTEM():
 	def __init__(self):
 		
@@ -31,7 +33,7 @@ class RTEM():
 		return ret
 
 						
-	def findhistoricdata(self,site,start=str((datetime.datetime.now()-datetime.timedelta(days=28)).date()),end=str(datetime.datetime.now().date()),removezeroes=False):
+	def findhistoricdata(self,site,start=str((datetime.datetime.now()-datetime.timedelta(days=period)).date()),end=str(datetime.datetime.now().date()),removezeroes=False):
 		url="http://bcc.opendata.onl/UTMC RTEM.json?"+"SCN="+str(site)+"&TS=true&Earliest="+start+"&Latest="+end+"&ApiKey="+os.environ['ALKEY']		
 		n=requests.get(url)
 		res=n.json()
@@ -49,7 +51,7 @@ class RTEM():
 		
 
 '''What does this do?
-The aim is to identify abnormally low speeds as onserved in the past 28 days.
+The aim is to identify abnormally low speeds as observed in the past 28 days.
 Selects sites which:
 have reported within the last 6 minutes
 takes the last 1 months history
@@ -76,9 +78,9 @@ for site in recentsites:
 	if len(data)>1:
 		sdata=sorted(data)
 		this =[site, sorted([(sdata[n+1]-sdata[n]).total_seconds() for n in range(len(sdata)-1)])[int(len(sdata)*0.85)]]
-		if this[1]>900:
+		if this[1]>9000:
 			continue
-		dat=sorted([data[n]['Speed'] for n in data])
+		dat=sorted([data[n] for n in data])
 		this.append(int(np.mean(dat)-(2*np.std(dat))))
 		if this[2]<=2:
 			continue
