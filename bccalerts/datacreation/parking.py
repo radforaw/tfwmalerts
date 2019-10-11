@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 print os.environ['ALKEY']
 import numpy as np
 from helpers import *
+from collections import defaultdict
 
 period=56
 
@@ -83,6 +84,7 @@ class parking(sensor):
 
 
 '''What does this do?
+the below is wrong - this is the parking one....
 The aim is to identify abnormally low speeds as observed in the past 28 days.
 Selects sites which:
 have reported within the last 6 minutes
@@ -91,7 +93,7 @@ removes time periods with 0 vehicles
 removes speeds over 70
 calculates threshold nut removes it if lower than 2mph
 produces
-name of sensor, sampling rate, sensible alert threshold (seen as mean - (stdev*2))
+name of sensor, sampling rate, sensible alert threshold (seen as mean - (stdev*4))
 '''
 
 def createthresholds():
@@ -102,14 +104,14 @@ def createthresholds():
 	import sys
 	print len(recentsites)
 
-	from collections import defaultdict
+
 	res=[]
 	for site in recentsites:
 		data=x.findhistoricdata(site)
 		if len(data)>1:
 			sdata=sorted(data)
 			this =[site, sorted([(sdata[n+1]-sdata[n]).total_seconds() for n in range(len(sdata)-1)])[int(len(sdata)*0.85)]]
-			if this[1]>90000:
+			if this[1]>90000: #need at least 90000 record updates in the past 28 days 
 				continue
 			dat=sorted([data[n] for n in data])
 			this.append(int(np.mean(dat)+(4*np.std(dat))))
@@ -119,9 +121,9 @@ def createthresholds():
 			res.append(this)
 		
 
-		
-		j=defaultdict(int)
 		'''
+		j=defaultdict(int)
+	
 		for n in dat:
 			j[int(n)]+=1
 		plt.plot([n for n in sorted(j)],[j[m] for m in sorted(j)])

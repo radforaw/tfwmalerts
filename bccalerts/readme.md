@@ -12,6 +12,8 @@ The software consists of three python tools:-
 * api.py
   * This software provides api functionality to the database, so that users can query current and historic data via an http request
 
-Futher details are available within each of these tools.
+Further details are available within each of these tools.
 
 There might be a script that you can run eventually that makes sure these run in the right order.
+
+Also, within /helpers ,there is a csv file called locations. This has to be updated manually at the moment due to the lack of api's with location data.
