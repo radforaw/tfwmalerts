@@ -143,7 +143,7 @@ def locmap():
 	m=folium.Map(location=[d,e])
 	for a in j['data']:
 		if len(a['location']['points'])==1:
-			folium.Marker(a['location']['points']).add_to(m)
+			folium.Marker(a['location']['points'][0]).add_to(m)
 		else:
 			folium.PolyLine(a['location']['points']).add_to(m)
 	return m.get_root().render()

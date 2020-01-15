@@ -1,6 +1,7 @@
 from datacreation import parking
-from datacreation import rtem
+from datacreation import rtemhelp
 
-parking.createthresholds()
-rtem.createthresholds()
+#parking.createthresholds()
 
+
+rtemhelp.createthresholds()
