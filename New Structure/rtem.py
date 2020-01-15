@@ -9,9 +9,10 @@ import numpy as np
 from helpers import *
 from collections import defaultdict
 import json
+from bccdatasets import RTEM
 
 period=56
-
+'''
 class RTEM():
 	def __init__(self):
 		
@@ -50,33 +51,37 @@ class RTEM():
 			tmp.append({names[a]:n[a] for a in range(len(data))})
 		d={datetime.datetime.strptime(a['Date'],"%Y-%m-%d %H:%M:%S"):a for a in tmp if a['Vehicles']!=0 and a['Speed']<70}	
 		return d
-		
-
-'''What does this do?
-The aim is to identify abnormally low speeds as observed in the past 28 days.
-Selects sites which:
-have reported within the last 6 minutes
-takes the last 1 months history
-removes time periods with 0 vehicles
-removes speeds over 70
-calculates threshold nut removes it if lower than 2mph
-produces
-name of sensor, sampling rate, sensible alert threshold (seen as mean - (stdev*2))
 '''
 
-def createthresholds():
+def createthresholds(last=6):
+	'''Creates speed thresholds based on the data
+	
+	The aim is to identify abnormally low speeds as observed in the past 28 days.
+	Selects sites which:
+		have reported within the last (last=6) minutes
+		takes the last 1 months history
+		removes time periods with 0 vehicles
+		removes speeds over 70
+		calculates threshold nut removes it if lower than 2mph
+		produces
+		name of sensor, sampling rate, sensible alert threshold (seen as mean - (stdev*2))
+	'''
+	
 	x=RTEM()
-	recentsites=[n[0] for n in x.allloops() if n[1]<6 ]
+	recentsites=[n[0] for n in x.allloops() if n[1]<last]
 	res=[]
 	for site in recentsites:
-		data=x.findhistoricdata(site)
+		try:
+			data=x.findhistoricdata(site,str(datetime.datetime.now().date()),str((datetime.datetime.now()-datetime.timedelta(days=period)).date()))
+			
+		except KeyError:
+			continue
 		if len(data)>1:
 			sdata=sorted(data)
 			this =[site, sorted([(sdata[n+1]-sdata[n]).total_seconds() for n in range(len(sdata)-1)])[int(len(sdata)*0.85)]]
 			if this[1]>9000:
 				continue
 			dat=sorted([data[n]['Speed'] for n in data if data[n]['Speed']>0])
-			
 			l,m=np.mean(dat),np.std(dat)
 			this.append([int(l-(2*m)),int(l-(3*m)),int(l-(4*m))])
 			if this[2][0]<=2:
@@ -84,7 +89,7 @@ def createthresholds():
 			print this
 			res.append(this)
 	with open('rtem_thresholds.json','w') as jsonfile:
-		json.dump(res,jsonfile)
+		json.dump(res,jsonfile,sort_keys=True,indent=2)
 		
 class rtem(sensor):		
 
@@ -107,3 +112,6 @@ class rtem(sensor):
 			return True
 		else:
 			return False
+
+if __name__=='__main__':
+	createthresholds()

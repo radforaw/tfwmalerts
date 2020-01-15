@@ -6,11 +6,16 @@ import uuid
 import sys
 	
 class crequests(): #requestscache
-	def __init__(self):
+	'''Caches web requests
+	
+	This class allows the software to appear to be carrying out frequent updates whilst actually connecting less frequently
+	'''
+	
+	def __init__(self,age=60):
 		self.conn=sqlite3.connect(":memory:")
 		self.c=self.conn.cursor()
 		self.createdb()
-		self.age=60
+		self.age=age
 		
 	def createdb(self):
 		self.c.execute('''CREATE TABLE netcache (time int, name text, data text)''')
@@ -46,6 +51,10 @@ class crequests(): #requestscache
 		
 	
 class sensor():
+	'''Base class for a generic sensor.
+	
+	A base class that defines methods and attributes for a generic sensor. Designed to be inherited by a specific sensor type. 
+	'''
 	
 	cache=crequests()
 	
@@ -64,7 +73,6 @@ class sensor():
 	
 	def current(self):
 		return self.incidents
-		
 		
 	def exceeded(self):
 		if self.current:
@@ -106,6 +114,11 @@ class sensor():
 
 		
 class incidentdatabase(): #requestscache
+	'''Database of incidents
+	
+	A database of all detected incidents, with methods to add, remove and query
+	'''
+	
 	def __init__(self,fileloc=":memory:"):
 		self.conn=sqlite3.connect(fileloc)
 		self.c=self.conn.cursor()
