@@ -3,7 +3,7 @@ import andyconfig
 import os
 import requests
 import datetime
-
+import math
 
 
 
@@ -54,32 +54,29 @@ class RTEM():
 
 	def findhistoricdata(self,site,end,start,removezerors=0): #end=str((datetime.datetime.now()+datetime.timedelta(days=1)).date()),start=str(datetime.datetime.now().date()-datetime.timedelta(days=1)),removezeroes=False):
 		url="http://bcc.opendata.onl/UTMC RTEM.json?"+"SCN="+str(site)+"&TS=true&Earliest="+start+"&Latest="+end+"&ApiKey="+os.environ['ALKEY']
-		print (url,end,start)
+		#print (url,end,start)
 		
 		n=requests.get(url)
 		res=n.json()
-		print (n.content[:1000])
+		#print (n.content[:1000])
 		#print (res['RTEMs']['kids'])
 		data=[]
 		for n in res['RTEMs']['kids']:
 			data.append(res['RTEMs']['kids'][n]['kids'])
-			'''
-			except TypeError:
-				data.append(res['RTEMs']['kids'][n]['kids'])
-			'''
-			
-		#print ('55555',data[0])
-		
 		d={}
 		for a in data:
 			tmp={}
 			for t in a:
+				lll=a[t]
 				try:
 					tmp[t]=float(a[t])
-				except (TypeError,ValueError) as e:
+					 
+				except TypeError:
 					tmp[t]=a[t]
-				
+				except ValueError:
+					tmp[t]=a[t]
 			d[datetime.datetime.strptime(a['Date'],"%Y-%m-%d %H:%M:%S")]=tmp
+			#print (tmp)
 		return d
 		
 if __name__=='__main__':

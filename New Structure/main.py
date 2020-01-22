@@ -22,6 +22,11 @@ label=Message(root,textvariable=var,relief=RAISED)
 var.set("please wait")
 label.pack(expand=True,fill=BOTH)
 
+'''
+****
+actual code here
+'''
+
 db=incidentdatabase(fileloc='testincident.db')
 
 sensors=[]
@@ -57,7 +62,9 @@ while True:
 		m="Good Service"
 	os.system('clear')
 	print json.dumps(db.querylive(),indent=2)
-
+	'''
+	this is just for display
 	var.set(m)
 	root.update()
+	'''
 	time.sleep(10)

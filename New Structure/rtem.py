@@ -71,23 +71,32 @@ def createthresholds(last=6):
 	recentsites=[n[0] for n in x.allloops() if n[1]<last]
 	res=[]
 	for site in recentsites:
+		print (site)
 		try:
 			data=x.findhistoricdata(site,str(datetime.datetime.now().date()),str((datetime.datetime.now()-datetime.timedelta(days=period)).date()))
 			
 		except KeyError:
+			print ('fail on key error')
 			continue
 		if len(data)>1:
 			sdata=sorted(data)
 			this =[site, sorted([(sdata[n+1]-sdata[n]).total_seconds() for n in range(len(sdata)-1)])[int(len(sdata)*0.85)]]
 			if this[1]>9000:
+				print ('fail on 9000 rule')
 				continue
 			dat=sorted([data[n]['Speed'] for n in data if data[n]['Speed']>0])
+			if not len(dat):
+				print ('fail on all zeros')
+				continue
 			l,m=np.mean(dat),np.std(dat)
 			this.append([int(l-(2*m)),int(l-(3*m)),int(l-(4*m))])
 			if this[2][0]<=2:
+				print ('fail on sd less than 2')
 				continue
 			print this
 			res.append(this)
+		else:
+			print ('fail on no data')
 	with open('rtem_thresholds.json','w') as jsonfile:
 		json.dump(res,jsonfile,sort_keys=True,indent=2)
 		
