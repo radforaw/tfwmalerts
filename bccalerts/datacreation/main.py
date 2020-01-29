@@ -18,18 +18,23 @@ import vms as loadvms
 import json
 
 # eye candy from here
-from Tkinter import *
+try:
+	from Tkinter import *
+	tkon=True
+except ImportError:
+	tkon=False
 
 
 
 	
 def looper():
-	root=Tk()
-	root.geometry("500x200")
-	var=StringVar()
-	label=Message(root,textvariable=var,relief=RAISED)
-	var.set("please wait")
-	label.pack(expand=True,fill=BOTH)
+	if tkon:
+		root=Tk()
+		root.geometry("500x200")
+		var=StringVar()
+		label=Message(root,textvariable=var,relief=RAISED)
+		var.set("please wait")
+		label.pack(expand=True,fill=BOTH)
 	# to here
 
 
@@ -62,18 +67,18 @@ def looper():
 			if x.incidents:
 				z.append(x.incidents)
 		#all this is just eye candy
-		if z:
-			m=""
-			for x in z:
-				m+= "Sensor "+x['Sensor']+" "+x['severity']+"\n"
-		else:
-			m="Good Service"
-			
-		os.system('clear') # this is to stop the CLI window getting too messy
-		print (db.querylive())
-
-		var.set(m)
-		root.update()
+		if tkon:
+			if z:
+				m=""
+				for x in z:
+					m+= "Sensor "+x['Sensor']+" "+x['severity']+"\n"
+			else:
+				m="Good Service"
+			os.system('clear') # this is to stop the CLI window getting too messy
+			print (db.querylive())
+	
+			var.set(m)
+			root.update()
 		#up to here
 		
 		time.sleep(10)

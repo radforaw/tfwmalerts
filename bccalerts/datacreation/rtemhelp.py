@@ -128,7 +128,7 @@ class rtem(sensor):
 
 	def update(self):
 		a=self.ALGET("UTMC RTEM")
-		#print a[:3000]
+		#print a[:3000] ***********
 		for n in json.loads(str(a))['RTEMS']['RTEM']:
 			if n['SCN']['content']==self.ref:
 				ret={'data':{'Speed':n['Speed'],'Vehicles':n['Vehicles'],'Occupancy':n['Occupancy']},'Timestamp':datetime.datetime.strptime(n['Date'],"%Y-%m-%d %H:%M:%S")}

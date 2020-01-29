@@ -1,6 +1,9 @@
 import requests
 import datetime
-import pyproj as proj
+try:
+	import pyproj as proj
+except ImportError:
+	import test_crs as proj
 import andyconfig
 import os
 import json
